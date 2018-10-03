@@ -1,0 +1,34 @@
+TODO
+
+The actual Hello, Networking
++ Much simpler.
++ Connect via localhost only.
++ One object - Dragonfly.
++ Client sends mouse movement
++ Server takes and moves Dragonfly there.  Sync.
++ That's it!
+
+---
+
+INPUT
+
+sendMouse()
+
+sendKeyboard()
+
+ADD HERO
+
+ADD BULLET
+
+POINTS
+
+Make world "tall" so each player  can move around.
+
+
+----------------------
+
+Saucer synchronize destruction
+
+Sacuer syncrhonize out
+
+
