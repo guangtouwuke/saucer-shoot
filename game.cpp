@@ -18,7 +18,6 @@
 
 // Game includes.
 #include "Client.h"
-#include "Reticle.h"
 #include "Role.h"
 #include "Saucer.h"
 #include "Server.h"
@@ -27,7 +26,7 @@
 // Function prototypes.
 void usage(void);
 void loadResources(void);
-void populateWorld(Server *p_server);
+void populateWorld(void);
  
 int main(int argc, char *argv[]) {
 
@@ -78,9 +77,9 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  // Setup logfile(s).
+  // Setup logging.
   LM.setFlush();
-  LM.setLogLevel(10);
+  LM.setLogLevel(15);
   LM.writeLog("Saucer Shoot 2! (v%.1f)", VERSION);
 
   // Load game resources.
@@ -89,13 +88,14 @@ int main(int argc, char *argv[]) {
   // Startup Server/Client.
   if (sflag) {
     df::splash();
+    populateWorld();
     Server *p_server = new Server;
     Role::getInstance().setServer(p_server);
-    populateWorld(p_server);
+    Role::getInstance().setClient(NULL);
   } else {
+    Client *p_client = new Client;
     Role::getInstance().setServer(NULL);
-    populateWorld(NULL);
-    new Client;
+    Role::getInstance().setClient(p_client);
   }
   
   // Run game (this blocks until game loop is over).
@@ -107,28 +107,16 @@ int main(int argc, char *argv[]) {
 
 ///////////////////////////////////////////////
 // Populate world with some game objects.
-void populateWorld(Server *p_server) {
+void populateWorld() {
 
-  if (p_server) {
-    // Server
+  // Move base Object id up to get past
+  // non-game Objects.
+  df::Object::max_id = 10;
 
-    // Move base Object id up to get past
-    // non-game Objects.
-    df::Object::max_id = 10;
-
-    // Spawn some Stars.
-    // These are synchronized when created.
-    for (int i=0; i<30; i++) 
-      new Star;
-
-  } else {
-    // Client
-
-    // Create Reticle.
-    // This is not synchronized.
-    new Reticle;
-  }
-  
+  // Spawn some Stars.
+  // These are synchronized when created.
+  for (int i=0; i<30; i++) 
+    new Star;
 }
 
 ///////////////////////////////////////////////

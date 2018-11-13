@@ -14,9 +14,9 @@ CC= g++
 
 # 1) Uncomment below for Linux (64-bit)
 LINKLIB= -ldragonfly -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lrt
-LINKDIR= -L../../../dragonfly/ # path to dragonfly library
-INCDIR= -I../../../dragonfly/ # path to dragonfly includes
-LIB= ../../../dragonfly/libdragonfly.a
+LINKDIR= -L../../dragonfly/ # path to dragonfly library
+INCDIR= -I../../dragonfly/ # path to dragonfly includes
+LIB= ../../dragonfly/libdragonfly.a
 
 # 2) Uncomment below for Mac (64-bit)
 #LINKLIB= -ldragonfly-mac64 -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio 

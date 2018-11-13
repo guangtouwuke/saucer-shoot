@@ -17,8 +17,8 @@ class Server : public df::NetworkNode {
  public:
   Server();
   int eventHandler(const df::Event *p_e);
-  int handleAccept();
-  int handleData();
+  int handleAccept(const df::EventNetwork *p_e);
+  int handleData(const df::EventNetwork *p_e);
   df::Object *createObject(std::string object_type);
 };
 

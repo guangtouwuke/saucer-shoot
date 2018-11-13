@@ -16,6 +16,7 @@
 // Game includes.
 #include "Client.h"
 #include "Hero.h"
+#include "Reticle.h"
 #include "Saucer.h"
 #include "ServerName.h"
 #include "Star.h"
@@ -28,8 +29,8 @@ Client::Client() {
   NM.setServer(false);
 
   // Get player input so can send to server.
-  registerInterest(df::KEYBOARD_EVENT);
-  registerInterest(df::MOUSE_EVENT);
+  //registerInterest(df::KEYBOARD_EVENT);
+  //registerInterest(df::MSE_EVENT);
 
   // Get step event so can poll for TextEntry stop.
   registerInterest(df::STEP_EVENT);
@@ -52,17 +53,12 @@ int Client::eventHandler(const df::Event *p_e) {
   if (p_e->getType() == df::STEP_EVENT && !NM.isConnected()) {
 
     // If ServerName active, wait until ends (player entering server name).
-    static bool wait = false;
-    ServerName *p_h = getServerNameObject();
+    static ServerName *p_h = getServerNameObject();
     if (!p_h) {
       LM.writeLog("Client::eventHandler(): Unable to find ServerName!");
       return -1;
     }
     if (p_h -> isActive())
-      wait = true;
-    else
-      wait = false;
-    if (wait)
       return 1;
 
     // Connect.
@@ -116,18 +112,23 @@ void Client::doConnect() const {
 }
 
 // Handle incoming connect message.
-int Client::handleConnect() {
+int Client::handleConnect(const df::EventNetwork *p_e) {
   LM.writeLog("Client::handleConnect(): Client connected!");
+
+  // Create Reticle.
+  // This is not synchronized.
+  new Reticle;
+  
   return 0;
 }
 
 // Handle data network event using data in m_p_buff.  
 // Return 1 if handled, else 0 if ignored.
-int Client::handleData() {
+int Client::handleData(const df::EventNetwork *p_e) {
 
   // If data handled, make sure to keep Objects SOFT
   // or can get stuck.
-  if (NetworkNode::handleData() == 1) {
+  if (NetworkNode::handleData(p_e) == 1) {
     df::ObjectList ol = WM.getAllObjects();
     df::ObjectListIterator oli(&ol);
     for (oli.first(); !oli.isDone(); oli.next()) {

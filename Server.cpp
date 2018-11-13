@@ -3,6 +3,8 @@
 //
 
 // Engine includes.
+#include "EventKeyboardNetwork.h"
+#include "EventMouseNetwork.h"
 #include "EventNetwork.h"
 #include "EventStep.h"
 #include "InputManager.h"
@@ -59,7 +61,7 @@ void Server::doSync() {
       sendMessage(df::SYNC_OBJECT, p_o);
     }
 
-    // Heroess are synchronized when created, moved or destroyed.
+    // Heroes are synchronized when created, moved or destroyed.
     if (p_o -> getType() == "Hero-client" ||
 	p_o -> getType() == "Hero-server") {
       if (p_o -> isModified(df::ID) ||
@@ -83,7 +85,7 @@ void Server::doSync() {
 }
 
 // Handle accept.
-int Server::handleAccept() {
+int Server::handleAccept(const df::EventNetwork *p_e) {
   LM.writeLog("Server::handleAccept(): server now connected.");
 
   // Spawn some Saucers.
@@ -100,7 +102,7 @@ int Server::handleAccept() {
 }
 
 // Handle data.
-int Server::handleData() {
+int Server::handleData(const df::EventNetwork *p_e) {
   LM.writeLog("Server::handleData():");
 
   // Message type.
@@ -122,11 +124,11 @@ int Server::handleData() {
     memcpy(&key, m_p_buff+3*sizeof(int), sizeof(int));
     LM.writeLog("\tkey is %d.", key);
 
-    // Create keboard event and send. 
-    df::EventKeyboard e;
+    // Create network keboard event and send. 
+    df::EventKeyboardNetwork e;
     e.setKeyboardAction(action);
     e.setKey(key);
-    IM.onEvent(&e);
+    NM.onEvent(&e);
 
     return 1;
   }
@@ -148,17 +150,19 @@ int Server::handleData() {
     // Mouse-x.
     float x;
     memcpy(&x, m_p_buff+4*sizeof(float), sizeof(float));
+    LM.writeLog("\tmouse-x is %f", x);
 
     // Mouse-y.
     float y;
     memcpy(&y, m_p_buff+5*sizeof(float), sizeof(float));
+    LM.writeLog("\tmouse-y is %f", y);
 
-    // Create mouse event and send. 
-    df::EventMouse e;
+    // Create network mouse event and send. 
+    df::EventMouseNetwork e;
     e.setMouseAction(action);
     e.setMouseButton(button);
     e.setMousePosition(df::Vector(x,y));
-    IM.onEvent(&e);
+    NM.onEvent(&e);
 
     return 1;
   }

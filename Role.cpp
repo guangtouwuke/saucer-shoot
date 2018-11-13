@@ -19,3 +19,13 @@ void Role::setServer(Server *p_server) {
 Server *Role::getServer() const {
   return m_p_server;
 }
+
+// Set client.
+void Role::setClient(Client *p_client) {
+  m_p_client = p_client;
+}
+
+// Return true if client.
+Client *Role::getClient() const {
+  return m_p_client;
+}

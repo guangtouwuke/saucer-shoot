@@ -24,7 +24,7 @@ class Hero : public df::Object {
   void nuke();
 
  public:
-  Hero(bool is_server);
+  Hero(bool hero_server);
   ~Hero();
   int eventHandler(const df::Event *p_e);
 };

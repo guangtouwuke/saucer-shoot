@@ -20,8 +20,8 @@ class Client : public df::NetworkNode {
  public:
   Client();
   ~Client();
-  int handleConnect();
-  int handleData();
+  int handleConnect(const df::EventNetwork *p_e);
+  int handleData(const df::EventNetwork *p_e);
   int eventHandler(const df::Event *p_e);
   df::Object *createObject(std::string object_type);
 

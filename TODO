@@ -1,14 +1,10 @@
 TODO
 
-The actual Hello, Networking
-+ Much simpler.
-+ Connect via localhost only.
-+ One object - Dragonfly.
-+ Client sends mouse movement
-+ Server takes and moves Dragonfly there.  Sync.
-+ That's it!
+Right now, plumbing seems to work.
 
----
+Need to think about how to cleanly separate Hero-client
+and Hero-server where both are on the client and both
+are on the server.
 
 INPUT
 

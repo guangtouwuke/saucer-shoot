@@ -3,7 +3,10 @@
 //
 
 // Engine includes.
+#include "EventKeyboard.h"
+#include "EventKeyboardNetwork.h"
 #include "EventMouse.h"
+#include "EventMouseNetwork.h"
 #include "EventStep.h"
 #include "LogManager.h"
 #include "ResourceManager.h"
@@ -16,10 +19,10 @@
 #include "Role.h"
 #include "util.h"
 
-Hero::Hero(bool is_server) {
+Hero::Hero(bool hero_server) {
 
   std::string sprite_label;
-  if (is_server)
+  if (hero_server)
     sprite_label = "ship";
   else
     sprite_label = "ship-2";
@@ -38,26 +41,24 @@ Hero::Hero(bool is_server) {
 
   // Player controls hero, so register with keyboard and mouse.
   registerInterest(df::KEYBOARD_EVENT);
-  registerInterest(df::MOUSE_EVENT);
+  registerInterest(df::MSE_EVENT);
 
-  // Server opponent controls hero, so register with keyboard and mouse
-  // over the network.
-  if (is_server) {
-    registerInterest(df::NETWORK_KEYBOARD_EVENT);
-    registerInterest(df::NETWORK_MOUSE_EVENT);
-  }
+  // If Server, Client controls other hero, so register with keyboard
+  // and mouse to get commands from network.
+  registerInterest(df::NETWORK_KEYBOARD_EVENT);
+  registerInterest(df::NETWORK_MSE_EVENT);
 
   // Need to update rate control each step.
   registerInterest(df::STEP_EVENT);
 
   // Set object type.
-  if (is_server) 
+  if (hero_server) 
     setType("Hero-server");
   else
     setType("Hero-client");
 
   // Set starting location.
-  if (is_server) {
+  if (hero_server) {
     df::Vector p(7, 1*WM.getBoundary().getVertical()/3);
     setPosition(p);
   } else {
@@ -66,8 +67,11 @@ Hero::Hero(bool is_server) {
   }
   
   // Create reticle for firing bullets.
-  p_reticle = new Reticle();
-  p_reticle->draw();
+  if ((Role::getInstance().getServer() && hero_server) ||
+      (!Role::getInstance().getServer() && !hero_server)) {
+    p_reticle = new Reticle();
+    p_reticle->draw();
+  }
   
   // Set attributes that control actions.
   move_slowdown = 2;
@@ -97,6 +101,8 @@ Hero::~Hero() {
 // Return 0 if ignored, else 1.
 int Hero::eventHandler(const df::Event *p_e) {
 
+  LM.writeLog("Hero::eventHandler(): event is %s", p_e->getType().c_str());
+
   if (p_e->getType() == df::KEYBOARD_EVENT && mouseInWindow()) {
 
     const df::EventKeyboard *p_keyboard_event = dynamic_cast <const df::EventKeyboard *> (p_e);
@@ -104,7 +110,7 @@ int Hero::eventHandler(const df::Event *p_e) {
     return 1;
   }
 
-  if (p_e->getType() == df::MOUSE_EVENT && mouseInWindow()) {
+  if (p_e->getType() == df::MSE_EVENT && mouseInWindow()) {
     const df::EventMouse *p_mouse_event = dynamic_cast <const df::EventMouse *> (p_e);
     mouse(p_mouse_event);
     return 1;
@@ -122,49 +128,50 @@ int Hero::eventHandler(const df::Event *p_e) {
 // Take appropriate action according to mouse action.
 void Hero::mouse(const df::EventMouse *p_mouse_event) {
 
-  // Client ignores Hero-server input and vice-versa.
-  if (Role::getInstance().getServer() &&
-      getType() == "Hero-client" ||
-      !Role::getInstance().getServer() &&
-      getType() == "Hero-server")
-    return;
+  LM.writeLog("Hero::mouse(): my type is %s", getType().c_str());
 
+  /*
+  if ((Role::getInstance().getServer() && getType() == "hero-client") ||
+      (!Role::getInstance().getServer() && getType() == "hero-server")
+      return;
+  */
+  
   // Pressed button?
   if ((p_mouse_event->getMouseAction() == df::CLICKED) &&
       (p_mouse_event->getMouseButton() == df::Mouse::LEFT))
 
-    // Server fires.
-
     // Client sends input to server.
     if (!Role::getInstance().getServer()) {
-      LM.writeLog("Hero::mouse(): sending input to server.");
-      Role::getInstance().getServer() ->
+      LM.writeLog("Hero::mouse(): sending input to server");
+      LM.writeLog("\taction: %d", p_mouse_event->getMouseAction());
+      LM.writeLog("\tbutton: %f", p_mouse_event->getMouseButton());
+      LM.writeLog("\tposition: (%.2f, %.2f)",
+		  p_mouse_event->getMousePosition().getX(), 
+		  p_mouse_event->getMousePosition().getY());
+      Role::getInstance().getClient() ->
 	sendMessage(df::MOUSE_INPUT,
 		    p_mouse_event->getMouseAction(),
 		    p_mouse_event->getMouseButton(),
 		    p_mouse_event->getMousePosition());
-    } else
+    } else { // Server fires.
+      LM.writeLog("Hero::mouse(): firing bullet.");
       fire(p_mouse_event->getMousePosition());
+    }
 }
 
 // Take appropriate action according to key pressed.
 void Hero::kbd(const df::EventKeyboard *p_keyboard_event) {
 
-  // Client ignores Hero-server input and vice-versa.
-  if (Role::getInstance().getServer() &&
-      getType() == "Hero-client" ||
-      !Role::getInstance().getServer() &&
-      getType() == "Hero-server")
-    return;
-
   // Client sends input to server.
   if (!Role::getInstance().getServer()) {
+    LM.writeLog("Hero::kbd(): sending input to server, %p",
+		Role::getInstance().getClient());
+    Role::getInstance().getClient() ->
+      sendMessage(df::KEYBOARD_INPUT,
+		  p_keyboard_event->getKeyboardAction(),
+		  p_keyboard_event->getKey());
 
-    Role::getInstance().getServer() -> sendMessage(df::KEYBOARD_INPUT,
-		p_keyboard_event->getKeyboardAction(),
-		p_keyboard_event->getKey());
-
-  } else {
+  } else { // Move Hero.
 
     switch(p_keyboard_event->getKey()) {
     case df::Keyboard::W:			// up

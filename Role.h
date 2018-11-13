@@ -8,6 +8,7 @@
 #define ROLE_H
 
 // Game includes.
+#include "Client.h"
 #include "Server.h"
 
 class Role {
@@ -17,6 +18,7 @@ class Role {
   Role (Role const&);           // Don't allow copy.
   void operator=(Role const&);  // Don't allow assignment.
   Server *m_p_server;		// Used for synchronization.
+  Client *m_p_client;		// Used for synchronization.
 
  public:
   // Get the one and only instance of the Role.
@@ -27,6 +29,12 @@ class Role {
 
   // Return server.
   Server *getServer() const;
+
+  // Set client.
+  void setClient(Client *p_client);
+
+  // Return client.
+  Client *getClient() const;
 };
 
 #endif // ROLE_H
