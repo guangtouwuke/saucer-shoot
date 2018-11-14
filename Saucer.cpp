@@ -20,29 +20,37 @@
 #include "Saucer.h"
 #include "Server.h"
 
-Saucer::Saucer() {
+// Init is generally called only on the server since client just syncs.
+void Saucer::init() {
 
+  // Setup "saucer" sprite.
+  df::Sprite *p_temp_sprite = RM.getSprite("saucer");
+  if (!p_temp_sprite)
+    LM.writeLog("Saucer::Saucer(): Warning! Sprite '%s' not found",
+		"saucer");
+  else {
+    setSprite(p_temp_sprite);
+    setSpriteSlowdown(4);		
+  }
+  
+  // Set object type.
+  setType("Saucer");
+  
+  // Set speed in horizontal direction.
+  setVelocity(df::Vector(-0.25,0)); // 1 space left every 4 frames
+    
+  // Move Saucer to start location.
+  moveToStart();
+}
+
+// Constructor.
+Saucer::Saucer(bool do_init) {
+
+  if (do_init)
+    init();
   // Only Server needs to initialize since will sync with client.
   if (Role::getInstance().getServer())  {
 
-    // Setup "saucer" sprite.
-    df::Sprite *p_temp_sprite = RM.getSprite("saucer");
-    if (!p_temp_sprite)
-      LM.writeLog("Saucer::Saucer(): Warning! Sprite '%s' not found",
-		  "saucer");
-    else {
-      setSprite(p_temp_sprite);
-      setSpriteSlowdown(4);		
-    }
-
-    // Set object type.
-    setType("Saucer");
-    
-    // Set speed in horizontal direction.
-    setVelocity(df::Vector(-0.25,0)); // 1 space left every 4 frames
-    
-    // Move Saucer to start location.
-    moveToStart();
   }
 }
 
@@ -50,18 +58,17 @@ Saucer::Saucer() {
 // Return 0 if ignored, else 1.
 int Saucer::eventHandler(const df::Event *p_e) {
 
-  if (p_e->getType() == df::OUT_EVENT) {
-    // Saucers on Server are synchronized when they move off the screen.
-    if (Role::getInstance().getServer()) {
-      out();
-      return 1;
-    }
+  // Only Server needs to handle events.
+  if (!Role::getInstance().getServer())
     return 0;
+
+  if (p_e->getType() == df::OUT_EVENT) {
+    out();
+    return 1;
   }
 
   if (p_e->getType() == df::COLLISION_EVENT) {
-    const df::EventCollision *p_collision_event = dynamic_cast <df::EventCollision const *> (p_e);
-    hit(p_collision_event);
+    hit((df::EventCollision *) p_e);
     return 1;
   }
 
@@ -85,34 +92,42 @@ void Saucer::out() {
   // Otherwise, move back to far right.
   moveToStart();
 
-  LM.writeLog("Saucer::out(): syncing Saucer (id %d).", getId());
+  LM.writeLog(1, "Saucer::out(): syncing Saucer (id %d).", getId());
   Role::getInstance().getServer() -> sendMessage(df::SYNC_OBJECT, this);
 
   // Server also spawns new Saucer.
-  new Saucer;
+  new Saucer(true);
+}
+
+// Destructor.
+Saucer::~Saucer() {
+  // Create an explosion.
+  Explosion *p_explosion = new Explosion;
+  p_explosion -> setPosition(this -> getPosition());
 }
 
 // Called when Saucer collides.
 void Saucer::hit(const df::EventCollision *p_collision_event) {
+
+  // Note: this method only called on Server.
+  if (!Role::getInstance().getServer()) {
+    LM.writeLog("Saucer::hit(): Error! Only to be called on Server.");
+    return;
+  }
 
   // If Saucer on Saucer, ignore.
   if ((p_collision_event -> getObject1() -> getType() == "Saucer") &&
       (p_collision_event -> getObject2() -> getType() == "Saucer"))
     return;
 
-  // If Bullet, create explosion and make new Saucer.
+  // If Bullet, make new Saucer since appear stay around perpetually.
+  // (Saucer deletion handled in Bullet.)
   if ((p_collision_event -> getObject1() -> getType() == "Bullet-client") ||
       (p_collision_event -> getObject2() -> getType() == "Bullet-client") ||
       (p_collision_event -> getObject1() -> getType() == "Bullet-server") ||
       (p_collision_event -> getObject2() -> getType() == "Bullet-server")) {
-
-    // Create an explosion.
-    Explosion *p_explosion = new Explosion;
-    p_explosion -> setPosition(this -> getPosition());
-
-    // Saucers appear stay around perpetually.
     if (Role::getInstance().getServer())
-      new Saucer;
+      new Saucer(true);
   }
 
   // If Hero, mark both objects for destruction.
@@ -125,9 +140,9 @@ void Saucer::hit(const df::EventCollision *p_collision_event) {
 
     // Saucers on Server are synchronized when they are destroyed.
     if (Role::getInstance().getServer()) {
-      LM.writeLog("Saucer::hit(): syncing Saucer (id %d).", getId());
+      LM.writeLog(1, "Saucer::hit(): syncing Saucer (id %d).", getId());
         Role::getInstance().getServer() ->
-	  sendMessage(df::DELETE_OBJECT, getId());
+	  sendMessage(df::DELETE_OBJECT, this);
     }
   }
 }
@@ -160,6 +175,6 @@ void Saucer::moveToStart() {
   }
 
   WM.moveObject(this, temp_pos);
-  LM.writeLog("Saucer::moveToStart(): syncing Saucer (id %d).", getId());
-  Role::getInstance().getServer() -> sendMessage(df::SYNC_OBJECT, this);
+  LM.writeLog(1, "Saucer::moveToStart(): syncing Saucer (id %d).", getId());
+  Role::getInstance().getServer()->sendMessage(df::SYNC_OBJECT, this);
 }

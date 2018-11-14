@@ -2,6 +2,7 @@
 
 Role::Role() {
   m_p_server = NULL;
+  m_p_client = NULL;
 }
 
 // Get the one and only instance of the Role.

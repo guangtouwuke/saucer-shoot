@@ -14,6 +14,7 @@
 #include "WorldManager.h"
 
 // Game includes.
+#include "Bullet.h"
 #include "Client.h"
 #include "Hero.h"
 #include "Reticle.h"
@@ -126,8 +127,7 @@ int Client::handleConnect(const df::EventNetwork *p_e) {
 // Return 1 if handled, else 0 if ignored.
 int Client::handleData(const df::EventNetwork *p_e) {
 
-  // If data handled, make sure to keep Objects SOFT
-  // or can get stuck.
+  // Keep all Objects as SPECTRAL since Server handles collisions.
   if (NetworkNode::handleData(p_e) == 1) {
     df::ObjectList ol = WM.getAllObjects();
     df::ObjectListIterator oli(&ol);
@@ -137,7 +137,7 @@ int Client::handleData(const df::EventNetwork *p_e) {
 	  oli.currentObject() -> getType() == "Hero-server" ||
 	  oli.currentObject() -> getType() == "Bullet-client" ||
 	  oli.currentObject() -> getType() == "Bullet-server")
-	oli.currentObject() -> setSolidness(df::SOFT);
+	oli.currentObject() -> setSolidness(df::SPECTRAL);
     }
   }
 }
@@ -146,23 +146,28 @@ int Client::handleData(const df::EventNetwork *p_e) {
 // Return pointer to Object.
 df::Object *Client::createObject(std::string object_type) {
 
-  LM.writeLog("Client::createObject(): creating '%s'",
+  LM.writeLog(1, "Client::createObject(): creating '%s'",
 	      object_type.c_str());
 
   Object *p_obj = NULL;
+  bool do_init = false;
   if (object_type == "Star")
     p_obj = new Star;
   else if (object_type == "Saucer")
-    p_obj = new Saucer;
+    p_obj = new Saucer(do_init);
   else if (object_type == "Hero-client")
     p_obj = new Hero(false);
   else if (object_type == "Hero-server")
     p_obj = new Hero(true);
+  else if (object_type == "Bullet-client")
+    p_obj = new Bullet(do_init, false);
+  else if (object_type == "Bullet-server")
+    p_obj = new Bullet(do_init, true);
   else
     LM.writeLog("Client::createObject(): uknown type '%s'",
 		object_type.c_str());
 
-  LM.writeLog("Client::createObject(): Total Objects: %d",
+  LM.writeLog(2, "Client::createObject(): Total Objects: %d",
 	      WM.getAllObjects().getCount());
 
   return p_obj;

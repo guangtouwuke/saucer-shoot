@@ -15,12 +15,21 @@
 // Game includes.
 #include "Bullet.h"
 #include "Explosion.h"
+#include "GameOver.h"
 #include "Hero.h"
 #include "Role.h"
 #include "util.h"
 
+// Constructor.
 Hero::Hero(bool hero_server) {
 
+  // Set object type.
+  if (hero_server) 
+    setType("Hero-server");
+  else
+    setType("Hero-client");
+
+  // Setup sprite label.
   std::string sprite_label;
   if (hero_server)
     sprite_label = "ship";
@@ -51,12 +60,6 @@ Hero::Hero(bool hero_server) {
   // Need to update rate control each step.
   registerInterest(df::STEP_EVENT);
 
-  // Set object type.
-  if (hero_server) 
-    setType("Hero-server");
-  else
-    setType("Hero-client");
-
   // Set starting location.
   if (hero_server) {
     df::Vector p(7, 1*WM.getBoundary().getVertical()/3);
@@ -67,20 +70,30 @@ Hero::Hero(bool hero_server) {
   }
   
   // Create reticle for firing bullets.
+  // Note: Reticles are not synchronized across games.
+  p_reticle = NULL;
   if ((Role::getInstance().getServer() && hero_server) ||
       (!Role::getInstance().getServer() && !hero_server)) {
-    p_reticle = new Reticle();
+    p_reticle = new Reticle;
     p_reticle->draw();
   }
   
-  // Set attributes that control actions.
+  // Set attributes that control rate for moving and shooting.
   move_slowdown = 2;
   move_countdown = move_slowdown;
   fire_slowdown = 30;
   fire_countdown = fire_slowdown;
 }
 
+// Destructor.
 Hero::~Hero() {
+
+  // Heroes on Server are synchronized when they are destroyed.
+  if (Role::getInstance().getServer() && WM.isStarted()) {
+    LM.writeLog(1, "Hero::~Hero(): sending DELETE.");
+    Role::getInstance().getServer() ->
+      sendMessage(df::DELETE_OBJECT, this);
+  }
 
   // Make big explosion.
   for (int i=-8; i<=8; i+=5) {
@@ -93,34 +106,111 @@ Hero::~Hero() {
     }
   }
 
-  // Mark Reticle for deletion.
-  WM.markForDelete(p_reticle);
+  // If Reticle, then mark for deletion.
+  if (p_reticle)
+    WM.markForDelete(p_reticle);
+
+  // Create GameOver;
+  new GameOver;
 }
 
 // Handle event.
 // Return 0 if ignored, else 1.
 int Hero::eventHandler(const df::Event *p_e) {
 
-  LM.writeLog("Hero::eventHandler(): event is %s", p_e->getType().c_str());
+  LM.writeLog(3, "Hero::eventHandler(): event is %s", p_e->getType().c_str());
 
-  if (p_e->getType() == df::KEYBOARD_EVENT && mouseInWindow()) {
-
-    const df::EventKeyboard *p_keyboard_event = dynamic_cast <const df::EventKeyboard *> (p_e);
-    kbd(p_keyboard_event);
-    return 1;
+  // Client: hero-server ignores events.
+  if (!Role::getInstance().getServer() && getType() == "Hero-server") {
+    LM.writeLog(5, "Hero::eventHandler(): Client - hero-server with event %s",
+		p_e -> getType().c_str());
+    return 0;
   }
 
-  if (p_e->getType() == df::MSE_EVENT && mouseInWindow()) {
-    const df::EventMouse *p_mouse_event = dynamic_cast <const df::EventMouse *> (p_e);
-    mouse(p_mouse_event);
-    return 1;
+  // Client: hero-client handles STEP, KEYBOARD, MOUSE.
+  if (!Role::getInstance().getServer() && getType() == "Hero-client") {
+
+    LM.writeLog(5, "Hero::eventHandler(): Client - hero-client with event %s",
+		p_e -> getType().c_str());
+    
+    if (p_e->getType() == df::STEP_EVENT) {
+      step();
+      return 1;
+    }
+
+    if (p_e->getType() == df::KEYBOARD_EVENT && mouseInWindow()) {
+      kbd((df::EventKeyboard *) p_e);
+      return 1;
+    }
+
+    if (p_e->getType() == df::MSE_EVENT && mouseInWindow()) {
+      mouse((df::EventMouse *) p_e);
+      return 1;
+    }
+
   }
 
-  if (p_e->getType() == df::STEP_EVENT) {
-    step();
-    return 1;
+  // Server: hero-server handles STEP, KEYBOARD, MOUSE.
+  if (Role::getInstance().getServer() && getType() == "Hero-server") {
+
+    LM.writeLog(5, "Hero::eventHandler(): Server - hero-server with event %s",
+		p_e -> getType().c_str());
+    
+    if (p_e->getType() == df::STEP_EVENT) {
+      step();
+      return 1;
+    }
+
+    if (p_e->getType() == df::KEYBOARD_EVENT && mouseInWindow()) {
+      kbd((df::EventKeyboard *) p_e);
+      return 1;
+    }
+
+    if (p_e->getType() == df::MSE_EVENT && mouseInWindow()) {
+      mouse((df::EventMouse *) p_e);
+      return 1;
+    }
+
   }
- 
+
+  // Server: hero-client handles STEP, NETWORK KEYBOARD, NETWORK MOUSE.
+  if (Role::getInstance().getServer() && getType() == "Hero-client") {
+
+    LM.writeLog(5, "Hero::eventHandler(): Server - hero-client with event %s",
+		p_e -> getType().c_str());
+
+    if (p_e->getType() == df::STEP_EVENT) {
+      step();
+      return 1;
+    }
+
+    if (p_e->getType() == df::NETWORK_MSE_EVENT) {
+      // Create "normal" mouse event.
+      df::EventMouseNetwork *p_n = (df::EventMouseNetwork *) p_e;
+      df::EventMouse e;
+      e.setMouseAction(p_n -> getMouseAction());
+      e.setMouseButton(p_n -> getMouseButton());
+      e.setMousePosition(p_n -> getMousePosition());
+      mouse(&e);
+      return 1;
+    }
+
+    if (p_e->getType() == df::NETWORK_KEYBOARD_EVENT) {
+      // Create "normal" keyboard event.
+      df::EventKeyboardNetwork *p_n = (df::EventKeyboardNetwork *) p_e;
+      df::EventKeyboard e;
+      e.setKeyboardAction(p_n -> getKeyboardAction());
+      e.setKey(p_n -> getKey());
+      kbd(&e);
+      return 1;
+    }
+
+  }
+
+  LM.writeLog(5, "Hero::eventHandler(): Ignored: %s - %s with event %s",
+	      Role::getInstance().getServer() ? "Server" : "Client",
+	      getType().c_str(), p_e -> getType().c_str());
+
   // If get here, have ignored this event.
   return 0;
 }
@@ -128,24 +218,16 @@ int Hero::eventHandler(const df::Event *p_e) {
 // Take appropriate action according to mouse action.
 void Hero::mouse(const df::EventMouse *p_mouse_event) {
 
-  LM.writeLog("Hero::mouse(): my type is %s", getType().c_str());
-
-  /*
-  if ((Role::getInstance().getServer() && getType() == "hero-client") ||
-      (!Role::getInstance().getServer() && getType() == "hero-server")
-      return;
-  */
-  
   // Pressed button?
   if ((p_mouse_event->getMouseAction() == df::CLICKED) &&
-      (p_mouse_event->getMouseButton() == df::Mouse::LEFT))
+      (p_mouse_event->getMouseButton() == df::Mouse::LEFT)) {
 
     // Client sends input to server.
     if (!Role::getInstance().getServer()) {
-      LM.writeLog("Hero::mouse(): sending input to server");
-      LM.writeLog("\taction: %d", p_mouse_event->getMouseAction());
-      LM.writeLog("\tbutton: %f", p_mouse_event->getMouseButton());
-      LM.writeLog("\tposition: (%.2f, %.2f)",
+      LM.writeLog(1, "Hero::mouse(): sending mouse input to server:");
+      LM.writeLog(3, "\taction: %d", p_mouse_event->getMouseAction());
+      LM.writeLog(3, "\tbutton: %f", p_mouse_event->getMouseButton());
+      LM.writeLog(3, "\tposition: (%.2f, %.2f)",
 		  p_mouse_event->getMousePosition().getX(), 
 		  p_mouse_event->getMousePosition().getY());
       Role::getInstance().getClient() ->
@@ -154,9 +236,10 @@ void Hero::mouse(const df::EventMouse *p_mouse_event) {
 		    p_mouse_event->getMouseButton(),
 		    p_mouse_event->getMousePosition());
     } else { // Server fires.
-      LM.writeLog("Hero::mouse(): firing bullet.");
+      LM.writeLog(2, "Hero::mouse(): firing bullet.");
       fire(p_mouse_event->getMousePosition());
     }
+  }
 }
 
 // Take appropriate action according to key pressed.
@@ -164,8 +247,9 @@ void Hero::kbd(const df::EventKeyboard *p_keyboard_event) {
 
   // Client sends input to server.
   if (!Role::getInstance().getServer()) {
-    LM.writeLog("Hero::kbd(): sending input to server, %p",
-		Role::getInstance().getClient());
+    LM.writeLog(1, "Hero::kbd(): sending keyboard input to server:");
+    LM.writeLog(3, "\taction: %d", p_keyboard_event->getKeyboardAction());
+    LM.writeLog(3, "\tkey: %d", p_keyboard_event->getKey());
     Role::getInstance().getClient() ->
       sendMessage(df::KEYBOARD_INPUT,
 		  p_keyboard_event->getKeyboardAction(),
@@ -183,8 +267,10 @@ void Hero::kbd(const df::EventKeyboard *p_keyboard_event) {
 	move(+1);
       break;
     case df::Keyboard::Q:			// quit
-      if (p_keyboard_event->getKeyboardAction() == df::KEY_PRESSED)
+      if (p_keyboard_event->getKeyboardAction() == df::KEY_PRESSED) {
+	LM.writeLog(3, "Hero::kbd(): %s - 'Q' key is pressed", getType());
 	WM.markForDelete(this);
+      }
       break;
     };
   }
@@ -220,12 +306,20 @@ void Hero::fire(df::Vector target) {
   df::Vector v = target - getPosition();
   v.normalize();
   v.scale(1);
-  Bullet *p = new Bullet(getPosition());
+
+  bool do_init = true;
+  bool server_hero;
+  if (getType() == "Hero-server")
+    server_hero = true;
+  else 
+    server_hero = false;
+  Bullet *p = new Bullet(do_init, server_hero, getPosition());
   p->setVelocity(v);
 
   // Play "fire" sound.
   df::Sound *p_sound = RM.getSound("fire");
-  p_sound->play();
+  if (p_sound)
+    p_sound->play();
 }
 
 // Decrease rate restriction counters.
@@ -241,4 +335,3 @@ void Hero::step() {
   if (fire_countdown < 0)
     fire_countdown = 0;
 }
-

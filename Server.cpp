@@ -22,7 +22,6 @@ Server::Server() {
 
   // Set as network server.
   setType("Server");
-  NM.setServer(true);
 
   // Register for step events to synchronize objects.
   registerInterest(df::STEP_EVENT);
@@ -56,7 +55,7 @@ void Server::doSync() {
     // Stars are synchronized only when first created.
     if (p_o -> isModified(df::ID) &&
 	p_o -> getType() == "Star") {
-      LM.writeLog("Server::doSync(): NEW %s (id %d).",
+      LM.writeLog(2, "Server::doSync(): NEW %s (id %d).",
 		  p_o->getType().c_str(), p_o->getId());
       sendMessage(df::SYNC_OBJECT, p_o);
     }
@@ -66,7 +65,18 @@ void Server::doSync() {
 	p_o -> getType() == "Hero-server") {
       if (p_o -> isModified(df::ID) ||
 	  p_o -> isModified(df::POSITION)) {
-	LM.writeLog("Server::doSync(): Synchronizing %s (id %d).",
+	LM.writeLog(2, "Server::doSync(): Synchronizing %s (id %d).",
+		    p_o->getType().c_str(), p_o->getId());
+	sendMessage(df::SYNC_OBJECT, p_o);
+      }
+    }
+
+    // Bullets are synchronized when created or destroyed.
+    if (p_o -> getType() == "Bullet-client" ||
+	p_o -> getType() == "Bullet-server" ) {
+      if (p_o -> isModified(df::ID) ||
+	  p_o -> isModified(df::POSITION)) {
+	LM.writeLog(2, "Server::doSync(): Synchronizing %s (id %d).",
 		    p_o->getType().c_str(), p_o->getId());
 	sendMessage(df::SYNC_OBJECT, p_o);
       }
@@ -76,7 +86,7 @@ void Server::doSync() {
     // destroyed or movedToStart().
     if (p_o -> isModified(df::ID) &&
 	p_o -> getType() == "Saucer") {
-      LM.writeLog("Server::doSync(): NEW %s (id %d).",
+      LM.writeLog(2, "Server::doSync(): NEW %s (id %d).",
 		  p_o->getType().c_str(), p_o->getId());
       sendMessage(df::SYNC_OBJECT, p_o);
     }
@@ -92,70 +102,75 @@ int Server::handleAccept(const df::EventNetwork *p_e) {
   // These are synchronized when created, destroyed
   // or movedToStart().
   for (int i=0; i<5; i++) 
-    new Saucer;
+    new Saucer(true);
 
-  // Spawn Hero-client.
+  // Spawn Heroes.
   new Hero(false);
+  new Hero(true);
 
+  // Synchronize with newly-connected client.
   doSync();
+
+  // All is well.
   return 1;
 }
 
 // Handle data.
 int Server::handleData(const df::EventNetwork *p_e) {
-  LM.writeLog("Server::handleData():");
+  LM.writeLog(2, "Server::handleData():");
 
   // Message type.
   df::MessageType message_type;
   memcpy(&message_type, m_p_buff+1*sizeof(int), sizeof(int));
-  LM.writeLog("\tmessage type is %d.", message_type);
+  LM.writeLog(3, "\tmessage type is %d.", message_type);
 
   // Keyboard.
   if (message_type == df::KEYBOARD_INPUT) {
-    LM.writeLog("\tKEYBOARD_INPUT");
+    LM.writeLog(3, "\tKEYBOARD_INPUT");
 
     // Action.
     df::EventKeyboardAction action;
     memcpy(&action, m_p_buff+2*sizeof(int), sizeof(int));
-    LM.writeLog("\taction is %d.", action);
+    LM.writeLog(3, "\taction is %d.", action);
 
     // Key.
     df::Keyboard::Key key;
     memcpy(&key, m_p_buff+3*sizeof(int), sizeof(int));
-    LM.writeLog("\tkey is %d.", key);
+    LM.writeLog(3, "\tkey is %d.", key);
 
     // Create network keboard event and send. 
     df::EventKeyboardNetwork e;
     e.setKeyboardAction(action);
     e.setKey(key);
     NM.onEvent(&e);
+    LM.writeLog(3, "\tSent network event.");
 
     return 1;
   }
 
   // Mouse.
   if (message_type == df::MOUSE_INPUT) {
-    LM.writeLog("\tMOUSE_INPUT");
+    LM.writeLog(3, "\tMOUSE_INPUT");
 
     // Action.
     df::EventMouseAction action;
     memcpy(&action, m_p_buff+2*sizeof(int), sizeof(int));
-    LM.writeLog("\taction is %d.", action);
+    LM.writeLog(3, "\taction is %d.", action);
 
     // Button.
     df::Mouse::Button button;
     memcpy(&button, m_p_buff+3*sizeof(int), sizeof(int));
-    LM.writeLog("\tbutton is %d.", button);
+    LM.writeLog(3, "\tbutton is %d.", button);
 
     // Mouse-x.
     float x;
     memcpy(&x, m_p_buff+4*sizeof(float), sizeof(float));
-    LM.writeLog("\tmouse-x is %f", x);
+    LM.writeLog(3, "\tmouse-x is %f", x);
 
     // Mouse-y.
     float y;
     memcpy(&y, m_p_buff+5*sizeof(float), sizeof(float));
-    LM.writeLog("\tmouse-y is %f", y);
+    LM.writeLog(3, "\tmouse-y is %f", y);
 
     // Create network mouse event and send. 
     df::EventMouseNetwork e;

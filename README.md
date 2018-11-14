@@ -40,6 +40,13 @@ Client
 
 ### Synchronization
 
+Server: generates for: Stars, Saucers, Heroes and Bullets.  Resolves
+all collisions for Saucers, Heroes and Bullets.  When Hero dies,
+creates GameOver object.  When GameOver terminates, game ends.
+
+Client: keeps Saucers, Heroes and Bullets as SPECTRAL.  Sends all
+input (mouse and keyboard) to Server. 
+
 Stars - synchronized when the client first connects.  They are never
 synchronized after that since they are strictly decorative.
 
@@ -47,6 +54,10 @@ Saucers - synchronized when the client first connects.  Also, when
 created, destroyed or moved to start.
 
 Heroes - synchronized when created, moved or destroyed.
+
+GameOver - not synchronized.  Created as needed on each node.
+
+Explosion - not synchronized.  Created as needed on each node.
 
 -------------------------------------
 

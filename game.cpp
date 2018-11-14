@@ -13,6 +13,7 @@
 // Engine includes.
 #include "GameManager.h"
 #include "LogManager.h"
+#include "NetworkManager.h"
 #include "ResourceManager.h"
 #include "utility.h"
 
@@ -79,7 +80,7 @@ int main(int argc, char *argv[]) {
 
   // Setup logging.
   LM.setFlush();
-  LM.setLogLevel(15);
+  LM.setLogLevel(1);
   LM.writeLog("Saucer Shoot 2! (v%.1f)", VERSION);
 
   // Load game resources.
@@ -92,6 +93,12 @@ int main(int argc, char *argv[]) {
     Server *p_server = new Server;
     Role::getInstance().setServer(p_server);
     Role::getInstance().setClient(NULL);
+    NM.setServer(true);
+    if (!NM.isServer()) {
+      LM.writeLog("main(): NetworkManager server setup failed!");
+      GM.setGameOver();
+      return 1;
+    }
   } else {
     Client *p_client = new Client;
     Role::getInstance().setServer(NULL);
@@ -128,8 +135,10 @@ void loadResources(void) {
   RM.loadSprite("sprites/bullet-spr.txt", "bullet");
   RM.loadSprite("sprites/bullet-spr-2.txt", "bullet-2");
   RM.loadSprite("sprites/explosion-spr.txt", "explosion");
+  RM.loadSprite("sprites/gameover-spr.txt", "gameover");
   RM.loadSound("sounds/fire.wav", "fire");
   RM.loadSound("sounds/explode.wav", "explode");
+  RM.loadSound("sounds/game-over.wav", "gameover");
 }
 
 ///////////////////////////////////////////////

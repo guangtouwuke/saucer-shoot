@@ -25,13 +25,14 @@ LIB= ../../dragonfly/libdragonfly.a
 
 ######
 
-#CFLAGS := -g
+CFLAGS := -g
 #DEBUG := $(DEBUG)
 
 GAMESRC= \
         Bullet.cpp \
         Client.cpp \
         Explosion.cpp \
+        GameOver.cpp \
         Hero.cpp \
         Reticle.cpp \
         Role.cpp \
