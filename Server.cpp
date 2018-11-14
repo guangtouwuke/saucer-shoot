@@ -14,6 +14,7 @@
 
 // Game includes.
 #include "Hero.h"
+#include "Points.h"
 #include "Role.h"
 #include "Saucer.h"
 #include "Server.h"
@@ -107,6 +108,10 @@ int Server::handleAccept(const df::EventNetwork *p_e) {
   // Spawn Heroes.
   new Hero(false);
   new Hero(true);
+
+  // Spawn points.
+  new Points(true, false);
+  new Points(true, true);
 
   // Synchronize with newly-connected client.
   doSync();

@@ -17,6 +17,7 @@
 #include "Bullet.h"
 #include "Client.h"
 #include "Hero.h"
+#include "Points.h"
 #include "Reticle.h"
 #include "Saucer.h"
 #include "ServerName.h"
@@ -152,7 +153,11 @@ df::Object *Client::createObject(std::string object_type) {
   Object *p_obj = NULL;
   bool do_init = false;
   if (object_type == "Star")
-    p_obj = new Star;
+    p_obj = new Star(do_init);
+  else if (object_type == "Points-client")
+    p_obj = new Points(do_init, false);
+  else if (object_type == "Points-server")
+    p_obj = new Points(do_init, true);
   else if (object_type == "Saucer")
     p_obj = new Saucer(do_init);
   else if (object_type == "Hero-client")

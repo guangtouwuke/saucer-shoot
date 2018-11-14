@@ -13,7 +13,7 @@
 // Game includes.
 #include "Star.h"
 
-Star::Star() {
+void Star::init() {
   setType("Star");
   setSolidness(df::SPECTRAL);
   setVelocity(df::Vector((float) -1.0 /(rand()%9 + 2), 0));
@@ -29,6 +29,12 @@ Star::Star() {
   s.setType(df::CIRCLE);
   s.setSize(5 * getVelocity().getMagnitude());
   setShape(s);
+}
+
+// Constructor.
+Star::Star(bool on_server) {
+  if (on_server)
+    init();
 }
 
 // Handle event.

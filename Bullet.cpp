@@ -47,8 +47,8 @@ void Bullet::init(bool server_hero, df::Vector hero_pos) {
 }
 
 // Constructor.
-Bullet::Bullet(bool do_init, bool server_hero, df::Vector hero_pos) {
-  if (do_init)
+Bullet::Bullet(bool on_server, bool server_hero, df::Vector hero_pos) {
+  if (on_server)
     init(server_hero, hero_pos);
 }
 

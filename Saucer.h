@@ -18,7 +18,7 @@ class Saucer : public df::Object {
   void init();
   
  public:
-  Saucer(bool do_init);
+  Saucer(bool on_server);
   ~Saucer();
   int eventHandler(const df::Event *p_e);
 };

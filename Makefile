@@ -34,6 +34,7 @@ GAMESRC= \
         Explosion.cpp \
         GameOver.cpp \
         Hero.cpp \
+        Points.cpp \
         Reticle.cpp \
         Role.cpp \
         Saucer.cpp \

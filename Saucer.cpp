@@ -16,6 +16,7 @@
  
 // Game includes.
 #include "Explosion.h"
+#include "Points.h"
 #include "Role.h"
 #include "Saucer.h"
 #include "Server.h"
@@ -44,14 +45,9 @@ void Saucer::init() {
 }
 
 // Constructor.
-Saucer::Saucer(bool do_init) {
-
-  if (do_init)
+Saucer::Saucer(bool on_server) {
+  if (on_server)
     init();
-  // Only Server needs to initialize since will sync with client.
-  if (Role::getInstance().getServer())  {
-
-  }
 }
 
 // Handle event.
@@ -101,6 +97,7 @@ void Saucer::out() {
 
 // Destructor.
 Saucer::~Saucer() {
+
   // Create an explosion.
   Explosion *p_explosion = new Explosion;
   p_explosion -> setPosition(this -> getPosition());
@@ -136,7 +133,17 @@ void Saucer::hit(const df::EventCollision *p_collision_event) {
       ((p_collision_event -> getObject1() -> getType()) == "Hero-server") || 
       ((p_collision_event -> getObject2() -> getType()) == "Hero-server")) {
     WM.markForDelete(p_collision_event -> getObject1());
-    WM.markForDelete(p_collision_event -> getObject2());
+    WM.markForDelete(p_collision_event -> getObject2()); 
+
+    // Add 10 points.
+    if (((p_collision_event -> getObject1() -> getType()) == "Hero-client") || 
+	((p_collision_event -> getObject2() -> getType()) == "Hero-client")) {
+      df::EventView ev("Yellow hero", 10, true);
+      WM.onEvent(&ev);
+    } else {
+      df::EventView ev("Blue hero", 10, true);
+      WM.onEvent(&ev);
+    }
 
     // Saucers on Server are synchronized when they are destroyed.
     if (Role::getInstance().getServer()) {

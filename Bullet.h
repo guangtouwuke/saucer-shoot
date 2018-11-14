@@ -13,6 +13,6 @@ class Bullet : public df::Object {
   void init(bool server_hero, df::Vector hero_pos);
 
  public:
-  Bullet(bool do_init, bool server_hero, df::Vector hero_pos=df::Vector(0,0));
+  Bullet(bool on_server, bool server_hero, df::Vector hero_pos=df::Vector(0,0));
   int eventHandler(const df::Event *p_e);
 };

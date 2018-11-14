@@ -1,6 +1,6 @@
 # README
 
-This is a "Hello, World" networking program for Dragonfly.
+This is a 2-player networking game for Dragonfly.
 
 It uses a classic "authoritative server" implementation.  The server's
 game state is the final word.
@@ -9,6 +9,22 @@ Only the Server spawns game objects.
 
 The Client gathers user input but doesn't act upon it. Instead, it
 Sends all user input to the Server.
+
+## To Run
+
+Build, making sure to link in Dragonfly version 4.5 (or later).
+
+Start up Server:
+
+> game -s (.\game.exe on Windows)
+
+Start up Client:
+
+> game -c (.\game.exe on Windows)
+
+Note: if running from inside Visual Studio, command line arguments can
+be set in the Solution properties.
+
 
 ## Features
 
@@ -55,9 +71,9 @@ created, destroyed or moved to start.
 
 Heroes - synchronized when created, moved or destroyed.
 
-GameOver - not synchronized.  Created as needed on each node.
+GameOver - not synchronized. Created as needed on each node.
 
-Explosion - not synchronized.  Created as needed on each node.
+Explosion - not synchronized. Created as needed on each node.
 
 -------------------------------------
 

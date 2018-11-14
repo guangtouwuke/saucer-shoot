@@ -123,7 +123,7 @@ void populateWorld() {
   // Spawn some Stars.
   // These are synchronized when created.
   for (int i=0; i<30; i++) 
-    new Star;
+    new Star(true);
 }
 
 ///////////////////////////////////////////////
