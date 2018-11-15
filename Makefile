@@ -25,7 +25,7 @@ LIB= ../../dragonfly/libdragonfly.a
 
 ######
 
-CFLAGS := -g
+#CFLAGS := -g
 #DEBUG := $(DEBUG)
 
 GAMESRC= \
