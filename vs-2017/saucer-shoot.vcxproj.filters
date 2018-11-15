@@ -18,16 +18,10 @@
     <ClInclude Include="..\Bullet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\EventNuke.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Explosion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\GameOver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\GameStart.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Hero.h">
@@ -45,24 +39,30 @@
     <ClInclude Include="..\Star.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Role.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Server.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ServerName.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\EventNuke.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Explosion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\GameOver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\GameStart.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Hero.cpp">
@@ -80,6 +80,24 @@
     <ClCompile Include="..\Star.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Role.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ServerName.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Media Include="..\sounds\explode.wav">
@@ -89,12 +107,6 @@
       <Filter>Resource Files</Filter>
     </Media>
     <Media Include="..\sounds\game-over.wav">
-      <Filter>Resource Files</Filter>
-    </Media>
-    <Media Include="..\sounds\nuke.wav">
-      <Filter>Resource Files</Filter>
-    </Media>
-    <Media Include="..\sounds\start-music.wav">
       <Filter>Resource Files</Filter>
     </Media>
   </ItemGroup>
@@ -108,14 +120,13 @@
     <Text Include="..\sprites\gameover-spr.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="..\sprites\gamestart-spr.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
     <Text Include="..\sprites\saucer-spr.txt">
       <Filter>Resource Files</Filter>
     </Text>
     <Text Include="..\sprites\ship-spr.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="..\sprites\bullet-spr-2.txt" />
+    <Text Include="..\sprites\ship-spr-2.txt" />
   </ItemGroup>
 </Project>

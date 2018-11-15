@@ -140,7 +140,11 @@ int Client::handleData(const df::EventNetwork *p_e) {
 	  oli.currentObject() -> getType() == "Bullet-server")
 	oli.currentObject() -> setSolidness(df::SPECTRAL);
     }
+
+	return 1;
   }
+
+  return 0;
 }
 
 // Create Object of given type.

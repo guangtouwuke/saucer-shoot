@@ -23,7 +23,7 @@
     <ProjectGuid>{EDD58140-616C-495A-8167-2A785C4626E7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>saucershoot</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -77,8 +77,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\sfml-2.5\include;..\..\dragonfly\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\sfml-2.5\lib;..\..\dragonfly\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\sfml-2.5\include;C:\Users\clayp\Documents\Visual Studio 2017\dragonfly-src-net;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\sfml-2.5\lib;C:\Users\clayp\Documents\Visual Studio 2017\dragonfly-src-net\vs-2017\x64\Debug;$(LibraryPath)</LibraryPath>
+    <TargetName>game.exe</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -87,8 +88,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\sfml-2.5\include;..\..\dragonfly\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\sfml-2.5\lib;..\..\dragonfly\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\sfml-2.5\include;..\..\dragonfly-src-net;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\sfml-2.5\lib;..\..\dragonfly-src-net;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -112,8 +113,8 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>sfml-system-d.lib;sfml-window-d.lib;sfml-graphics-d.lib;sfml-main-d.lib;sfml-audio-d.lib;sfml-network-d.lib;Winmm.lib;Ws2_32.lib;libdragonfly-x64-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>sfml-system-d.lib;sfml-window-d.lib;sfml-graphics-d.lib;sfml-main-d.lib;sfml-audio-d.lib;sfml-network-d.lib;Winmm.lib;Ws2_32.lib;dragonfly.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -179,7 +180,7 @@
     <ClCompile Include="..\Server.cpp" />
     <ClCompile Include="..\ServerName.cpp" />
     <ClCompile Include="..\Star.cpp" />
-    <ClCompile Include="..\utl.cpp" />
+    <ClCompile Include="..\util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="..\sounds\explode.wav" />

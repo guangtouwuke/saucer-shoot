@@ -7,7 +7,9 @@
 #define VERSION 2.0
 
 // System includes.
+#if !defined(_WIN32) && !defined(_WIN64)
 #include <unistd.h>  // for getopt()
+#endif
 #include <assert.h>  // for assert()
 
 // Engine includes.
@@ -33,10 +35,25 @@ int main(int argc, char *argv[]) {
 
   ///////////////////////////////////////////////
   // Parse command line args.
-  int c;
   char cflag = false; 
   char sflag = false; 
   bool errflag = false;
+
+#if defined(_WIN32) || defined(_WIN64)
+  // Must specify 1 arg.
+  errflag = true;
+  if (argc != 2)
+    usage();
+  if (strcmp(argv[1], "-s") == 0) {
+	sflag = true;
+	errflag = false;
+  }
+  if (strcmp(argv[1], "-c") == 0) {
+	cflag = true;
+	errflag = false;
+  }
+#else
+  int c;
   while ((c = getopt (argc, argv, "hcs")) != -1) {
     switch (c) {
     case 'c':			// client flag
@@ -52,22 +69,31 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
+#endif
 
   // Check that provided correct args.
   if (errflag) // error
     usage();
   if (argc <= 1) // too few args
     usage();
-  if (!cflag && !sflag) // not -c or -h
+  if (!cflag && !sflag) // not -c or -s
     usage();
-  if (cflag && sflag) // both -c and -h
+  if (cflag && sflag) // both -c and -s
     usage();
 
   // Setup logfile: server or client.
   if (sflag)
+#if defined(_WIN32) || defined(_WIN64)
+    _putenv_s("DRAGONFLY_LOG", "server.log");
+#else
     setenv("DRAGONFLY_LOG", "server.log", 1);
+#endif
   else if (cflag)
+#if defined(_WIN32) || defined(_WIN64)
+    _putenv_s("DRAGONFLY_LOG", "client.log");
+#else
     setenv("DRAGONFLY_LOG", "client.log", 1);
+#endif 
   else
     assert("Undetermined role. We should never get here.");
   
@@ -144,8 +170,12 @@ void loadResources(void) {
 ///////////////////////////////////////////////
 // Print usage message and exit.
 void usage() {
-  fprintf(stderr, "Hello, Network! (v%.1f)\n", VERSION);
+  fprintf(stderr, "Saucer Shoot 2 (v%.1f)\n", VERSION);
+#if defined(_WIN32) || defined(_WIN64)
+  fprintf(stderr, "Usage: game.exe {-s|-c} [-h]:\n");
+#else
   fprintf(stderr, "Usage: game {-s|-c} [-h]:\n");
+#endif
   fprintf(stderr, "\t-s  run as a server\n");
   fprintf(stderr, "\t-c  run as a client\n");
   fprintf(stderr, "\t-h  this help message\n");
