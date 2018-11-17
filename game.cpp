@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 
   // Setup logging.
   LM.setFlush();
-  LM.setLogLevel(20);
+  LM.setLogLevel(1);
   LM.writeLog("Saucer Shoot 2! (v%.1f)", VERSION);
 
   // Load game resources.
