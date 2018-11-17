@@ -133,6 +133,12 @@ int main(int argc, char *argv[]) {
   
   // Run game (this blocks until game loop is over).
   GM.run();
+
+  // Tell any connected games to also shut down.
+  if (sflag)
+	  Role::getInstance().getServer()->sendMessage(df::SET_GAME_OVER);
+  else
+	  Role::getInstance().getClient()->sendMessage(df::SET_GAME_OVER);
  
   // Shut everything down.
   GM.shutDown();

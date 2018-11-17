@@ -8,6 +8,7 @@
 #include "EventMouse.h"
 #include "EventMouseNetwork.h"
 #include "EventStep.h"
+#include "GameManager.h"
 #include "LogManager.h"
 #include "ResourceManager.h"
 #include "WorldManager.h"
@@ -89,7 +90,7 @@ Hero::Hero(bool hero_server) {
 Hero::~Hero() {
 
   // Heroes on Server are synchronized when they are destroyed.
-  if (Role::getInstance().getServer() && WM.isStarted()) {
+  if (Role::getInstance().getServer() && !GM.getGameOver()) {
     LM.writeLog(1, "Hero::~Hero(): sending DELETE.");
     Role::getInstance().getServer() ->
       sendMessage(df::DELETE_OBJECT, this);

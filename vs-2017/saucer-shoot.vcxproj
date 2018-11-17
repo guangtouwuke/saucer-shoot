@@ -77,8 +77,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\sfml-2.5\include;C:\Users\clayp\Documents\Visual Studio 2017\dragonfly-src-net;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\sfml-2.5\lib;C:\Users\clayp\Documents\Visual Studio 2017\dragonfly-src-net\vs-2017\x64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\sfml-2.5\include;C:\Users\clayp\Documents\Visual Studio 2017\dragonfly-src;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\sfml-2.5\lib;C:\Users\clayp\Documents\Visual Studio 2017\dragonfly-src\vs-2017\x64\Debug;$(LibraryPath)</LibraryPath>
     <TargetName>game.exe</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -88,8 +88,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\sfml-2.5\include;..\..\dragonfly-src-net;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\sfml-2.5\lib;..\..\dragonfly-src-net;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\sfml-2.5\include;C:\Users\clayp\Documents\Visual Studio 2017\dragonfly-src;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\sfml-2.5\lib;C:\Users\clayp\Documents\Visual Studio 2017\dragonfly-src\vs-2017\x64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -148,7 +148,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>sfml-system.lib;sfml-window.lib;sfml-graphics.lib;sfml-main.lib;sfml-audio.lib;sfml-network.lib;Winmm.lib;Ws2_32.lib;libdragonfly-x64-release.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-system.lib;sfml-window.lib;sfml-graphics.lib;sfml-main.lib;sfml-audio.lib;sfml-network.lib;Winmm.lib;Ws2_32.lib;dragonfly.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

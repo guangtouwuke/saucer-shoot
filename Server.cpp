@@ -187,7 +187,8 @@ int Server::handleData(const df::EventNetwork *p_e) {
     return 1;
   }
 
-  return 0;
+  // Call parent event handler.
+  return NetworkNode::handleData(p_e);
 }
 
 // Create Object of given type.
