@@ -16,11 +16,11 @@ Build, making sure to link in Dragonfly version 4.5 (or later).
 
 Start up Server:
 
-> game -s (.\game.exe on Windows)
+> game -s (.\game.exe -s on Windows)
 
 Start up Client:
 
-> game -c (.\game.exe on Windows)
+> game -c (.\game.exe -c on Windows)
 
 Note: if running from inside Visual Studio, command line arguments can
 be set in the Solution properties.
@@ -56,11 +56,11 @@ Client
 
 ### Synchronization
 
-Server: generates for: Stars, Saucers, Heroes and Bullets.  Resolves
+Server - generates Stars, Saucers, Heroes and Bullets.  Resolves
 all collisions for Saucers, Heroes and Bullets.  When Hero dies,
 creates GameOver object.  When GameOver terminates, game ends.
 
-Client: keeps Saucers, Heroes and Bullets as SPECTRAL.  Sends all
+Client - keeps Saucers, Heroes and Bullets as SPECTRAL.  Sends all
 input (mouse and keyboard) to Server. 
 
 Stars - synchronized when the client first connects.  They are never
