@@ -124,7 +124,7 @@ int Client::handleConnect(const df::EventNetwork *p_e) {
   return 0;
 }
 
-// Handle data network event using data in m_p_buff.  
+// Handle data network event.
 // Return 1 if handled, else 0 if ignored.
 int Client::handleData(const df::EventNetwork *p_e) {
 
@@ -141,7 +141,7 @@ int Client::handleData(const df::EventNetwork *p_e) {
 	oli.currentObject() -> setSolidness(df::SPECTRAL);
     }
 
-	return 1;
+    return 1;
   }
 
   return 0;
