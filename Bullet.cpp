@@ -78,7 +78,7 @@ void Bullet::out() {
   if (Role::getInstance().getServer()) {
     LM.writeLog(1, "Bullet::out(): syncing Bullet (id %d).", getId());
     Role::getInstance().getServer() ->
-      sendMessage(df::DELETE_OBJECT, getId());
+      sendMessage(df::DELETE_OBJECT, this);
   }
 
 }
