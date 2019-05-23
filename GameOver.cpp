@@ -65,6 +65,6 @@ void GameOver::step() {
 }
 
 // Override default draw so as not to display "value".
-void GameOver::draw() {
-  df::Object::draw();
+int GameOver::draw() {
+  return df::Object::draw();
 }

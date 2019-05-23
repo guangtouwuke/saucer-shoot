@@ -1,14 +1,14 @@
 # README
 
-This is a 2-player networking game for Dragonfly.
+This is a 2-player, Client-Server networking game for Dragonfly.
 
-It uses a classic "authoritative server" implementation.  The server's
-game state is the final word.
+The Server and the Client both have players.
+
+The Server is a classic "authoritative server" - i.e., the server's game state is the final word.
 
 Only the Server spawns game objects.
 
-The Client gathers user input but doesn't act upon it. Instead, it
-Sends all user input to the Server.
+The Client gathers player input but doesn't act upon it. Instead, it Sends all player input to the Server.
 
 ## To Run
 
@@ -22,8 +22,7 @@ Start up Client:
 
 > game -c (.\game.exe -c on Windows)
 
-Note: if running from inside Visual Studio, command line arguments can
-be set in the Solution properties.
+Note: if running from inside Visual Studio, command line arguments can be set in the Solution properties.
 
 
 ## Features
@@ -56,18 +55,13 @@ Client
 
 ### Synchronization
 
-Server - generates Stars, Saucers, Heroes and Bullets.  Resolves
-all collisions for Saucers, Heroes and Bullets.  When Hero dies,
-creates GameOver object.  When GameOver terminates, game ends.
+Server - generates Stars, Saucers, Heroes and Bullets.  Resolves all collisions for Saucers, Heroes and Bullets.  When Hero dies, creates GameOver object.  When GameOver terminates, game ends.
 
-Client - keeps Saucers, Heroes and Bullets as SPECTRAL.  Sends all
-input (mouse and keyboard) to Server. 
+Client - keeps Saucers, Heroes and Bullets as SPECTRAL.  Sends all input (mouse and keyboard) to Server.
 
-Stars - synchronized when the client first connects.  They are never
-synchronized after that since they are strictly decorative.
+Stars - synchronized when the client first connects.  They are never synchronized after that since they are strictly decorative.
 
-Saucers - synchronized when the client first connects.  Also, when
-created, destroyed or moved to start.
+Saucers - synchronized when the client first connects.  Also, when created, destroyed or moved to start.
 
 Heroes - synchronized when created, moved or destroyed.
 

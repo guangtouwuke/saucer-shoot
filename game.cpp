@@ -170,7 +170,7 @@ void loadResources(void) {
   RM.loadSprite("sprites/gameover-spr.txt", "gameover");
   RM.loadSound("sounds/fire.wav", "fire");
   RM.loadSound("sounds/explode.wav", "explode");
-  RM.loadSound("sounds/game-over.wav", "gameover");
+  RM.loadSound("sounds/game-over.wav", "game over");
 }
 
 ///////////////////////////////////////////////

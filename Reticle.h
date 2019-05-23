@@ -13,7 +13,7 @@ class Reticle : public df::Object {
 
  public:
   Reticle();
-  void draw(void);
+  int draw(void);
   int eventHandler(const df::Event *p_e);
 };
 
