@@ -17,6 +17,8 @@ LINKLIB= -ldragonfly -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -l
 LINKDIR= -L../../dragonfly/ # path to dragonfly library
 INCDIR= -I../../dragonfly/ # path to dragonfly includes
 LIB= ../../dragonfly/libdragonfly.a
+LINKDIR:= $(LINKDIR) -L$(HOME)/src/SFML/lib 
+INCDIR:= $(INCDIR) -I$(HOME)/src/SFML/include
 
 # 2) Uncomment below for Mac (64-bit)
 #LINKLIB= -ldragonfly-mac64 -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio 
@@ -63,45 +65,23 @@ depend:
 
 # DO NOT DELETE
 
-Bullet.o: Bullet.h Role.h Server.h Saucer.h
-Client.o: Client.h ServerName.h Saucer.h Server.h Star.h
+Bullet.o: Bullet.h Role.h Client.h ServerName.h Server.h Saucer.h
+Client.o: Bullet.h Client.h ServerName.h Hero.h Reticle.h Points.h Saucer.h
+Client.o: Server.h Star.h
 Explosion.o: Explosion.h
-Hero.o: Bullet.h Explosion.h Hero.h Reticle.h Role.h Server.h util.h
+GameOver.o: GameOver.h
+Hero.o: Bullet.h Explosion.h GameOver.h Hero.h Reticle.h Role.h Client.h
+Hero.o: ServerName.h Server.h util.h
+Points.o: Points.h Role.h Client.h ServerName.h Server.h
 Reticle.o: Reticle.h util.h
-Role.o: Role.h Server.h
-Saucer.o: /usr/include/stdlib.h /usr/include/features.h
-Saucer.o: /usr/include/stdc-predef.h /usr/include/sys/cdefs.h
-Saucer.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
-Saucer.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
-Saucer.o: /usr/include/endian.h /usr/include/bits/endian.h
-Saucer.o: /usr/include/bits/byteswap.h /usr/include/bits/types.h
-Saucer.o: /usr/include/bits/typesizes.h /usr/include/bits/byteswap-16.h
-Saucer.o: /usr/include/sys/types.h /usr/include/time.h
-Saucer.o: /usr/include/sys/select.h /usr/include/bits/select.h
-Saucer.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
-Saucer.o: /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h
-Saucer.o: /usr/include/alloca.h /usr/include/bits/stdlib-float.h Explosion.h
-Saucer.o: Role.h Server.h Saucer.h
-Server.o: Role.h Server.h
+Role.o: Role.h Client.h ServerName.h Server.h
+Saucer.o: /usr/include/stdlib.h Explosion.h Points.h Role.h Client.h
+Saucer.o: ServerName.h Server.h Saucer.h
+Server.o: Hero.h Reticle.h Points.h Role.h Client.h ServerName.h Server.h
+Server.o: Saucer.h
 ServerName.o: ServerName.h
-Star.o: /usr/include/stdlib.h /usr/include/features.h
-Star.o: /usr/include/stdc-predef.h /usr/include/sys/cdefs.h
-Star.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
-Star.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
-Star.o: /usr/include/endian.h /usr/include/bits/endian.h
-Star.o: /usr/include/bits/byteswap.h /usr/include/bits/types.h
-Star.o: /usr/include/bits/typesizes.h /usr/include/bits/byteswap-16.h
-Star.o: /usr/include/sys/types.h /usr/include/time.h
-Star.o: /usr/include/sys/select.h /usr/include/bits/select.h
-Star.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
-Star.o: /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h
-Star.o: /usr/include/alloca.h /usr/include/bits/stdlib-float.h Star.h
+Star.o: /usr/include/stdlib.h Star.h
 game.o: /usr/include/unistd.h /usr/include/features.h
-game.o: /usr/include/stdc-predef.h /usr/include/sys/cdefs.h
-game.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
-game.o: /usr/include/bits/posix_opt.h /usr/include/bits/environments.h
-game.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
-game.o: /usr/include/bits/confname.h /usr/include/getopt.h
-game.o: /usr/include/assert.h Client.h ServerName.h Reticle.h Role.h Server.h
-game.o: Saucer.h Star.h
+game.o: /usr/include/stdc-predef.h /usr/include/assert.h Client.h
+game.o: ServerName.h Role.h Server.h Saucer.h Star.h
 util.o: util.h

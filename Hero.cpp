@@ -36,18 +36,7 @@ Hero::Hero(bool hero_server) {
     sprite_label = "ship";
   else
     sprite_label = "ship-2";
-  
-  // Link to "ship" sprite.
-  df::Sprite *p_temp_sprite;
-  p_temp_sprite = RM.getSprite(sprite_label);
-  if (!p_temp_sprite)
-    LM.writeLog("Hero::Hero(): Warning! Sprite '%s' not found",
-		sprite_label.c_str());
-  else {
-    setSprite(p_temp_sprite);
-    setSpriteSlowdown(3);  // 1/3 speed animation.
-    setTransparency();	   // Transparent sprite.
-  }
+  setSprite(sprite_label);
 
   // Player controls hero, so register with keyboard and mouse.
   registerInterest(df::KEYBOARD_EVENT);

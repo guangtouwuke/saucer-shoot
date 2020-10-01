@@ -17,15 +17,10 @@ GameOver::GameOver() {
   setType("GameOver");
 
   // Link to "message" sprite.
-  df::Sprite *p_temp_sprite = RM.getSprite("gameover");
-  if (!p_temp_sprite)
-    LM.writeLog("GameOver::GameOver(): Warning! Sprite 'gameover' not found");
-  else {
-    setSprite(p_temp_sprite);
-    setSpriteSlowdown(15);		  
-    setTransparency('#');    // Transparent character.
-    time_to_live = p_temp_sprite->getFrameCount() * 15;
-  }
+  if (setSprite("gameover") == 0)
+    time_to_live = getAnimation().getSprite()->getFrameCount() * getAnimation().getSprite()->getSlowdown();
+  else
+    time_to_live = 0;
 
   // Put in center of window.
   setLocation(df::CENTER_CENTER);

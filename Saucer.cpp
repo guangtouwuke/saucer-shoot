@@ -25,15 +25,8 @@
 void Saucer::init() {
 
   // Setup "saucer" sprite.
-  df::Sprite *p_temp_sprite = RM.getSprite("saucer");
-  if (!p_temp_sprite)
-    LM.writeLog("Saucer::Saucer(): Warning! Sprite '%s' not found",
-		"saucer");
-  else {
-    setSprite(p_temp_sprite);
-    setSpriteSlowdown(4);		
-  }
-  
+  setSprite("saucer");
+
   // Set object type.
   setType("Saucer");
   
@@ -175,10 +168,10 @@ void Saucer::moveToStart() {
   temp_pos.setY(rand()%(int)(world_vert-4) + 4.0f);
 
   // If collision, move right slightly until empty space.
-  df::ObjectList collision_list = WM.isCollision(this, temp_pos);
+  df::ObjectList collision_list = WM.getCollisions(this, temp_pos);
   while (!collision_list.isEmpty()) {
     temp_pos.setX(temp_pos.getX()+1);
-    collision_list = WM.isCollision(this, temp_pos);
+    collision_list = WM.getCollisions(this, temp_pos);
   }
 
   WM.moveObject(this, temp_pos);

@@ -13,19 +13,18 @@
 #include "Explosion.h"
 
 Explosion::Explosion() {
+
   registerInterest(df::STEP_EVENT);
 
   // Link to "explosion" sprite.
-  df::Sprite *p_temp_sprite = RM.getSprite("explosion");
-  if (!p_temp_sprite)
-    LM.writeLog("Explosion::Explosion(): Warning! Sprite '%s' not found", 
-		"explosion");
+  if (setSprite("explosion") == 0)
+    // Set live time as long as sprite length.
+    time_to_live = getAnimation().getSprite()->getFrameCount();
   else
-    setSprite(p_temp_sprite);
+    time_to_live = 0;
 
   setType("Explosion");
 
-  time_to_live =  getSprite()->getFrameCount();
   setSolidness(df::SPECTRAL);
 }
 

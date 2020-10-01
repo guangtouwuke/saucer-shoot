@@ -16,22 +16,14 @@
 // Init is generally called only on the server since client just syncs.
 void Bullet::init(bool server_hero, df::Vector hero_pos) {
 
+  // Link to the right "bullet" sprite.
   std::string sprite_label;
   if (server_hero)
     sprite_label = "bullet";
   else
     sprite_label = "bullet-2";
+  setSprite(sprite_label);
 
-  // Link to "bullet" sprite.
-  df::Sprite *p_temp_sprite = RM.getSprite(sprite_label);
-  if (!p_temp_sprite)
-    LM.writeLog("Bullet::Bullet(): Warning! Sprite '%s' not found",
-		sprite_label.c_str());
-  else {
-    setSprite(p_temp_sprite);
-    setSpriteSlowdown(5);		
-  }
-    
   // Make the Bullets soft so can pass through Hero.
   setSolidness(df::SOFT);
     
