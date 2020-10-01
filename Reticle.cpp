@@ -47,5 +47,5 @@ int Reticle::eventHandler(const df::Event *p_e) {
 
 // Draw reticle on window.
 int Reticle::draw() {
-  DM.drawCh(getPosition(), RETICLE_CHAR, df::RED); 
+  return DM.drawCh(getPosition(), RETICLE_CHAR, df::RED); 
 }
