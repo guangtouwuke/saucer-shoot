@@ -27,4 +27,8 @@ class Hero : public df::Object {
   Hero(bool hero_server);
   ~Hero();
   int eventHandler(const df::Event *p_e);
+  static df::Vector speed;
+  std::string Hero::serialize(bool all);
+  //static df::Vector speed;
+  //static int saucerAllowed;
 };

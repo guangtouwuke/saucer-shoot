@@ -22,6 +22,7 @@
 #include "Saucer.h"
 #include "ServerName.h"
 #include "Star.h"
+#include "Life.h"
 
 // Constructor.
 Client::Client() {
@@ -37,6 +38,7 @@ Client::Client() {
   // Get step event so can poll for TextEntry stop.
   registerInterest(df::STEP_EVENT);
   new ServerName("localhost");
+
 
   LM.writeLog("Client::Client(): Client started");
 }
@@ -157,21 +159,23 @@ df::Object *Client::createObject(std::string object_type) {
   Object *p_obj = NULL;
   bool do_init = false;
   if (object_type == "Star")
-    p_obj = new Star(do_init);
+      p_obj = new Star(do_init);
   else if (object_type == "Points-client")
-    p_obj = new Points(do_init, false);
+      p_obj = new Points(do_init, false);
   else if (object_type == "Points-server")
-    p_obj = new Points(do_init, true);
+      p_obj = new Points(do_init, true);
   else if (object_type == "Saucer")
-    p_obj = new Saucer(do_init);
+      p_obj = new Saucer(do_init);
   else if (object_type == "Hero-client")
-    p_obj = new Hero(false);
+      p_obj = new Hero(false);
   else if (object_type == "Hero-server")
-    p_obj = new Hero(true);
+      p_obj = new Hero(true);
   else if (object_type == "Bullet-client")
-    p_obj = new Bullet(do_init, false);
+      p_obj = new Bullet(do_init, false);
   else if (object_type == "Bullet-server")
-    p_obj = new Bullet(do_init, true);
+      p_obj = new Bullet(do_init, true);
+  else if (object_type == "Life")
+      p_obj = new Life(do_init);
   else
     LM.writeLog("Client::createObject(): uknown type '%s'",
 		object_type.c_str());

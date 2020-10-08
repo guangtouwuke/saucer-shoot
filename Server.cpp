@@ -18,6 +18,7 @@
 #include "Role.h"
 #include "Saucer.h"
 #include "Server.h"
+#include "Life.h"
 
 Server::Server() {
 
@@ -99,19 +100,22 @@ void Server::doSync() {
 int Server::handleAccept(const df::EventNetwork *p_e) {
   LM.writeLog("Server::handleAccept(): server now connected.");
 
+
+  // Spawn Heroes.
+  new Hero(false);
+
   // Spawn some Saucers.
   // These are synchronized when created, destroyed
   // or movedToStart().
   for (int i=0; i<5; i++) 
     new Saucer(true);
 
-  // Spawn Heroes.
-  new Hero(false);
-  new Hero(true);
+  //new Hero(true);
 
   // Spawn points.
   new Points(true, false);
-  new Points(true, true);
+  new Life(true);
+  //new Points(true, true);
 
   // Synchronize with newly-connected client.
   doSync();

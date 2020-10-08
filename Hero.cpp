@@ -20,6 +20,8 @@
 #include "Hero.h"
 #include "Role.h"
 #include "util.h"
+#include "EventGO.h"
+#include "EventNuke.h"
 
 // Constructor.
 Hero::Hero(bool hero_server) {
@@ -41,12 +43,12 @@ Hero::Hero(bool hero_server) {
   // Player controls hero, so register with keyboard and mouse.
   registerInterest(df::KEYBOARD_EVENT);
   registerInterest(df::MSE_EVENT);
-
+  //registerInterest(GO_EVENT);
   // If Server, Client controls other hero, so register with keyboard
   // and mouse to get commands from network.
   registerInterest(df::NETWORK_KEYBOARD_EVENT);
   registerInterest(df::NETWORK_MSE_EVENT);
-
+  registerInterest(GO_EVENT);
   // Need to update rate control each step.
   registerInterest(df::STEP_EVENT);
 
@@ -57,22 +59,32 @@ Hero::Hero(bool hero_server) {
   } else {
     df::Vector p(7, 2*WM.getBoundary().getVertical()/3);
     setPosition(p);
+
+    speed = df::Vector(-0.25, 0);
   }
   
   // Create reticle for firing bullets.
   // Note: Reticles are not synchronized across games.
   p_reticle = NULL;
-  if ((Role::getInstance().getServer() && hero_server) ||
-      (!Role::getInstance().getServer() && !hero_server)) {
+  //if ((Role::getInstance().getServer() && hero_server) ||
+  //    (!Role::getInstance().getServer() && !hero_server)) {
     p_reticle = new Reticle;
     p_reticle->draw();
-  }
-  
+  //}
+	//speed = df::Vector(-0.25, 0);
+	//saucerAllowed = 20;
   // Set attributes that control rate for moving and shooting.
   move_slowdown = 2;
   move_countdown = move_slowdown;
   fire_slowdown = 30;
   fire_countdown = fire_slowdown;
+
+  nuke_count = 1;
+
+  df::ViewObject* p_vo = new df::ViewObject; // Count of nukes.
+  p_vo->setLocation(df::TOP_CENTER);
+  p_vo->setViewString("Nukes");
+  p_vo->setValue(nuke_count);
 }
 
 // Destructor.
@@ -138,6 +150,8 @@ int Hero::eventHandler(const df::Event *p_e) {
       return 1;
     }
 
+   
+
   }
 
   // Server: hero-server handles STEP, KEYBOARD, MOUSE.
@@ -200,10 +214,18 @@ int Hero::eventHandler(const df::Event *p_e) {
   LM.writeLog(5, "Hero::eventHandler(): Ignored: %s - %s with event %s",
 	      Role::getInstance().getServer() ? "Server" : "Client",
 	      getType().c_str(), p_e -> getType().c_str());
-
+  
+  if(Role::getInstance().getServer()){
+      if (p_e->getType() == GO_EVENT) {
+          LM.writeLog(5, "received eventGO");
+          WM.markForDelete(this);
+      }
+  }
   // If get here, have ignored this event.
   return 0;
 }
+
+
 
 // Take appropriate action according to mouse action.
 void Hero::mouse(const df::EventMouse *p_mouse_event) {
@@ -248,6 +270,10 @@ void Hero::kbd(const df::EventKeyboard *p_keyboard_event) {
   } else { // Move Hero.
 
     switch(p_keyboard_event->getKey()) {
+	case df::Keyboard::SPACE:			// nuke
+       if (p_keyboard_event->getKeyboardAction() == df::KEY_DOWN)
+            nuke();
+       break;
     case df::Keyboard::W:			// up
       if (p_keyboard_event->getKeyboardAction() == df::KEY_DOWN)
 	move(-1);
@@ -325,3 +351,33 @@ void Hero::step() {
   if (fire_countdown < 0)
     fire_countdown = 0;
 }
+
+void Hero::nuke()
+{
+    if (Role::getInstance().getServer() && (nuke_count > 0)) {
+        EventNuke e;
+        WM.onEvent(&e);
+        nuke_count--;
+    }
+}
+
+/*std::string Hero::serialize(bool all) {
+
+	LM.writeLog("Hero::serialize()");
+
+	std::string s = Object::serialize(all);
+
+	if (all || m_modified[WIDTH])
+		s += "width:" + df::toString(m_width) + ",";
+
+	if (all || m_modified[HEIGHT])
+		s += "height:" + df::toString(m_height) + ",";
+
+	for (int i = 0; i < WALL_ATTR_COUNT; i++) // Clear all modified indicators.
+		m_modified[i] = false;
+
+	// No longer needs to be synchronized.
+	setNeedSync(false);
+
+	return s;
+}*/

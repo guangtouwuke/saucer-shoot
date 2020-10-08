@@ -13,6 +13,7 @@ class Saucer : public df::Object {
  
  private:
   void moveToStart();
+  void speedUp();
   void out();
   void hit(const df::EventCollision *p_collision_event);
   void init();
